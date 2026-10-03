@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FixMate</string>
+
+    <!-- Common -->
+    <string name="action_retry">Retry</string>
+    <string name="action_back">Back</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_add_task">Add task</string>
+    <string name="action_sync_now">Sync now</string>
+    <string name="action_clear_search">Clear search</string>
+
+    <!-- Errors -->
+    <string name="error_network">Couldn\'t refresh tasks. Showing offline data.</string>
+    <string name="error_server">The server is having trouble. Please try again later.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+
+    <!-- Task list -->
+    <string name="task_list_search_hint">Search tasks…</string>
+    <string name="task_list_empty_title">No tasks yet</string>
+    <string name="task_list_empty_message">Pull down to load demo tasks or tap + to create your first one.</string>
+    <string name="task_list_no_results_title">No matching tasks</string>
+    <string name="task_list_no_results_message">Try a different search or filter.</string>
+    <string name="task_list_pending_sync">%1$d waiting to sync</string>
+    <string name="task_list_toggle_description">Mark task as completed</string>
+
+    <!-- Filters -->
+    <string name="filter_all">All</string>
+    <string name="filter_pending">Pending</string>
+    <string name="filter_completed">Completed</string>
+
+    <!-- Task status -->
+    <string name="status_pending">Pending</string>
+    <string name="status_completed">Completed</string>
+
+    <!-- Sync state -->
+    <string name="sync_synced">Synced</string>
+    <string name="sync_pending_create">Not synced</string>
+    <string name="sync_pending_update">Pending sync</string>
+    <string name="sync_pending_delete">Deleting…</string>
+
+    <!-- Task detail -->
+    <string name="task_detail_title">Task Detail</string>
+    <string name="task_detail_not_found">This task no longer exists.</string>
+    <string name="task_detail_label_id">ID</string>
+    <string name="task_detail_label_status">Status</string>
+    <string name="task_detail_label_user">User</string>
+    <string name="task_detail_label_updated">Last updated</string>
+    <string name="task_detail_label_sync">Sync status</string>
+    <string name="task_detail_mark_completed">Mark completed</string>
+    <string name="task_detail_mark_pending">Mark pending</string>
+    <string name="task_detail_delete_title">Delete task?</string>
+    <string name="task_detail_delete_message">This task will be removed from your device and the change will sync when you\'re online.</string>
+    <string name="task_detail_deleted">Task deleted</string>
+
+    <!-- Task editor -->
+    <string name="task_editor_new_title">New Task</string>
+    <string name="task_editor_edit_title">Edit Task</string>
+    <string name="task_editor_label_title">Task title</string>
+    <string name="task_editor_label_status">Status</string>
+    <string name="task_editor_error_blank">Title can\'t be empty</string>
+    <string name="task_editor_error_short">Title must be at least %1$d characters</string>
+    <string name="task_editor_saved">Task saved</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_section_sync">Sync</string>
+    <string name="settings_last_sync">Last sync: %1$s</string>
+    <string name="settings_last_sync_never">Last sync: never</string>
+    <string name="settings_pending_count">%1$d change(s) waiting to sync</string>
+    <string name="settings_sync_success">Everything is up to date</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_about_version">FixMate v%1$s</string>
+    <string name="settings_about_description">Offline-first task manager built with Jetpack Compose, Room, Retrofit, Hilt and WorkManager. Demo data provided by DummyJSON.</string>
+</resources>
