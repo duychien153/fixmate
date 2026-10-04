@@ -20,6 +20,9 @@
     <string name="error_unknown">Something went wrong. Please try again.</string>
 
     <!-- Task list -->
+    <string name="task_list_subtitle">Your focused task space</string>
+    <string name="task_list_overview_title">Today’s progress</string>
+    <string name="task_list_overview_count">%1$d of %2$d tasks completed</string>
     <string name="task_list_search_hint">Search tasks…</string>
     <string name="task_list_empty_title">No tasks yet</string>
     <string name="task_list_empty_message">Pull down to load demo tasks or tap + to create your first one.</string>

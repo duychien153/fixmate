@@ -1,6 +1,7 @@
 package com.duychien.fixmate.feature.taskdetail
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -100,6 +101,7 @@ fun TaskDetailContent(
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.task_detail_title)) },
@@ -118,6 +120,7 @@ fun TaskDetailContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding),
         ) {
             if (state.isProcessing) {
@@ -187,7 +190,13 @@ private fun TaskDetailBody(
             style = MaterialTheme.typography.headlineSmall,
         )
 
-        Card(modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            colors = androidx.compose.material3.CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+        ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 DetailRow(
                     label = stringResource(R.string.task_detail_label_status),
@@ -225,6 +234,7 @@ private fun TaskDetailBody(
             onClick = onToggleCompleted,
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
         ) {
             Text(
                 stringResource(
@@ -236,6 +246,7 @@ private fun TaskDetailBody(
             onClick = onEdit,
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
         ) {
             Icon(Icons.Default.Edit, contentDescription = null)
             Spacer(Modifier.width(8.dp))
@@ -245,6 +256,7 @@ private fun TaskDetailBody(
             onClick = onDeleteClick,
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
         ) {
             Icon(Icons.Default.Delete, contentDescription = null)

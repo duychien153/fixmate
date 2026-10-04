@@ -3,6 +3,7 @@ package com.duychien.fixmate.core.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -12,6 +13,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import com.duychien.fixmate.domain.model.ThemeMode
 
@@ -106,6 +109,13 @@ fun FixMateTheme(
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
+            shapes = Shapes(
+                extraSmall = RoundedCornerShape(8.dp),
+                small = RoundedCornerShape(12.dp),
+                medium = RoundedCornerShape(18.dp),
+                large = RoundedCornerShape(24.dp),
+                extraLarge = RoundedCornerShape(32.dp),
+            ),
             content = content,
         )
     }

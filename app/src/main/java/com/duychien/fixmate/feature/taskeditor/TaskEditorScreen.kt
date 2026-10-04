@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -93,6 +94,7 @@ fun TaskEditorContent(
     onSave: () -> Unit,
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -122,6 +124,7 @@ fun TaskEditorContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
@@ -138,27 +141,39 @@ fun TaskEditorContent(
                 },
                 enabled = !state.isSaving,
                 singleLine = true,
+                shape = MaterialTheme.shapes.large,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onSave() }),
             )
 
-            Text(
-                text = stringResource(R.string.task_editor_label_status),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Column(modifier = Modifier.selectableGroup()) {
-                StatusOption(
-                    label = stringResource(R.string.status_pending),
-                    selected = !state.completed,
-                    enabled = !state.isSaving,
-                    onClick = { onCompletedChange(false) },
-                )
-                StatusOption(
-                    label = stringResource(R.string.status_completed),
-                    selected = state.completed,
-                    enabled = !state.isSaving,
-                    onClick = { onCompletedChange(true) },
-                )
+            androidx.compose.material3.Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = androidx.compose.material3.CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = stringResource(R.string.task_editor_label_status),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Column(modifier = Modifier.selectableGroup()) {
+                        StatusOption(
+                            label = stringResource(R.string.status_pending),
+                            selected = !state.completed,
+                            enabled = !state.isSaving,
+                            onClick = { onCompletedChange(false) },
+                        )
+                        StatusOption(
+                            label = stringResource(R.string.status_completed),
+                            selected = state.completed,
+                            enabled = !state.isSaving,
+                            onClick = { onCompletedChange(true) },
+                        )
+                    }
+                }
             }
 
             Spacer(Modifier.height(8.dp))

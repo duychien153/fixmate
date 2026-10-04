@@ -1,5 +1,7 @@
 package com.duychien.fixmate.feature.tasklist
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -16,9 +17,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -26,12 +28,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -40,6 +44,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -100,60 +106,69 @@ fun TaskListContent(
 
     LaunchedEffect(errorMessage) {
         if (errorMessage != null) {
-            val result = snackbarHostState.showSnackbar(
-                message = errorMessage,
-                actionLabel = retryLabel,
-                withDismissAction = true,
-            )
+            val result = snackbarHostState.showSnackbar(errorMessage, retryLabel, withDismissAction = true)
             onErrorShown()
             if (result == SnackbarResult.ActionPerformed) onRefresh()
         }
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
+                title = {
+                    Column {
+                        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            text = stringResource(R.string.task_list_subtitle),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.action_settings))
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreateTask) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.action_add_task))
-            }
+            ExtendedFloatingActionButton(
+                onClick = onCreateTask,
+                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                text = { Text(stringResource(R.string.action_add_task)) },
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onTertiary,
+            )
         },
-        snackbarHost = {
-            SnackbarHost(snackbarHostState) { data -> Snackbar(snackbarData = data) }
-        },
+        snackbarHost = { SnackbarHost(snackbarHostState) { data -> Snackbar(snackbarData = data) } },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         ) {
+            TaskOverview(
+                total = state.tasks.size,
+                completed = state.tasks.count { it.completed },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = innerPadding.calculateTopPadding(), bottom = 16.dp),
+            )
             SearchField(
                 query = state.query,
                 onQueryChange = onQueryChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             )
-            Spacer(Modifier.height(8.dp))
             FilterRow(
                 selected = state.filter,
                 onSelected = onFilterChange,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )
             if (state.pendingSyncCount > 0) {
                 PendingSyncBanner(
                     count = state.pendingSyncCount,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                 )
             }
 
@@ -170,17 +185,13 @@ fun TaskListContent(
                         message = stringResource(R.string.task_list_no_results_message),
                     )
                     state.isEmpty -> EmptyState(
-                        icon = Icons.Default.List,
+                        icon = Icons.AutoMirrored.Filled.List,
                         title = stringResource(R.string.task_list_empty_title),
                         message = stringResource(R.string.task_list_empty_message),
                         actionLabel = stringResource(R.string.action_retry),
                         onAction = onRefresh,
                     )
-                    else -> TaskList(
-                        tasks = state.tasks,
-                        onTaskClick = onTaskClick,
-                        onToggleTask = onToggleTask,
-                    )
+                    else -> TaskList(state.tasks, onTaskClick, onToggleTask)
                 }
             }
         }
@@ -188,11 +199,46 @@ fun TaskListContent(
 }
 
 @Composable
-private fun SearchField(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun TaskOverview(total: Int, completed: Int, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    modifier = Modifier.padding(12.dp).size(24.dp),
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.task_list_overview_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = stringResource(R.string.task_list_overview_count, completed, total),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchField(query: String, onQueryChange: (String) -> Unit, modifier: Modifier = Modifier) {
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
@@ -207,22 +253,27 @@ private fun SearchField(
                 }
             }
         },
-        shape = MaterialTheme.shapes.extraLarge,
+        shape = MaterialTheme.shapes.large,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        ),
     )
 }
 
 @Composable
-private fun FilterRow(
-    selected: TaskFilter,
-    onSelected: (TaskFilter) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun FilterRow(selected: TaskFilter, onSelected: (TaskFilter) -> Unit, modifier: Modifier = Modifier) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         TaskFilter.entries.forEach { filter ->
             FilterChip(
                 selected = filter == selected,
                 onClick = { onSelected(filter) },
                 label = { Text(stringResource(filter.labelRes)) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                ),
             )
         }
     }
@@ -236,91 +287,60 @@ private fun PendingSyncBanner(count: Int, modifier: Modifier = Modifier) {
         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
         shape = MaterialTheme.shapes.medium,
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
-            Text(
-                text = stringResource(R.string.task_list_pending_sync, count),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Text(stringResource(R.string.task_list_pending_sync, count), style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
 
 @Composable
-private fun TaskList(
-    tasks: List<Task>,
-    onTaskClick: (Long) -> Unit,
-    onToggleTask: (Long) -> Unit,
-) {
+private fun TaskList(tasks: List<Task>, onTaskClick: (Long) -> Unit, onToggleTask: (Long) -> Unit) {
     val listState = rememberLazyListState()
     val firstTaskId = tasks.firstOrNull()?.id
-
-    // LazyColumn anchors on the first visible key, so an item inserted at index 0
-    // (e.g. a freshly created task) would otherwise land just above the viewport.
     LaunchedEffect(firstTaskId) {
         if (listState.firstVisibleItemIndex <= 1) listState.animateScrollToItem(0)
     }
-
     LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 104.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         items(tasks, key = { it.id }) { task ->
-            TaskCard(
-                task = task,
-                onClick = { onTaskClick(task.id) },
-                onToggle = { onToggleTask(task.id) },
-            )
+            TaskCard(task, onClick = { onTaskClick(task.id) }, onToggle = { onToggleTask(task.id) })
         }
     }
 }
 
 @Composable
-fun TaskCard(
-    task: Task,
-    onClick: () -> Unit,
-    onToggle: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun TaskCard(task: Task, onClick: () -> Unit, onToggle: () -> Unit, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Row(
-            modifier = Modifier.padding(start = 4.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
+            modifier = Modifier.padding(start = 6.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Checkbox(
-                checked = task.completed,
-                onCheckedChange = { onToggle() },
-            )
-            Column(modifier = Modifier.weight(1f)) {
+            Checkbox(checked = task.completed, onCheckedChange = { onToggle() })
+            Spacer(Modifier.width(6.dp))
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
                     text = task.title,
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     textDecoration = if (task.completed) TextDecoration.LineThrough else null,
-                    color = if (task.completed) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
+                    color = if (task.completed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
                 )
-                Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = stringResource(
-                            if (task.completed) R.string.status_completed else R.string.status_pending,
-                        ),
+                        stringResource(if (task.completed) R.string.status_completed else R.string.status_pending),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
